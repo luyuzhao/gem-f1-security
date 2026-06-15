@@ -5,7 +5,7 @@ st.set_page_config(
     page_title="GEM-F1 多场景安全检测系统",
     page_icon="🛡️",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 # ========== Session State ==========
@@ -22,69 +22,54 @@ st.markdown("""
     .main > div { padding-top: 1rem; }
 
     /* ========== Login Page ========== */
-    /* Full-screen gradient background */
-    .stApp { background: none !important; }
-    .login-wrapper {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(160deg, #0f172a 0%, #1e293b 35%, #0c4a6e 65%, #0f172a 100%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
+    .stApp {
+        background: linear-gradient(160deg, #0f172a 0%, #1e293b 35%, #0c4a6e 65%, #0f172a 100%) !important;
+    }
+    .block-container {
+        padding-top: 10vh !important;
     }
     .login-card {
-        background: rgba(255,255,255,0.96);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        padding: 52px 48px 44px 48px;
-        width: 440px;
-        box-shadow: 0 32px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.08);
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 48px 44px 40px 44px;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.3);
     }
     .login-brand {
         text-align: center;
-        margin-bottom: 36px;
+        margin-bottom: 32px;
     }
     .login-icon {
-        width: 64px;
-        height: 64px;
+        width: 56px; height: 56px;
         background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-        border-radius: 18px;
+        border-radius: 16px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 32px;
+        font-size: 28px;
         margin-bottom: 16px;
-        box-shadow: 0 8px 24px rgba(14,165,233,0.3);
+        box-shadow: 0 6px 20px rgba(14,165,233,0.25);
     }
     .login-title {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
         color: #0f172a;
         margin-bottom: 4px;
-        letter-spacing: -0.3px;
     }
     .login-subtitle {
         font-size: 13px;
         color: #64748b;
         font-weight: 400;
     }
-    .login-field {
-        margin-bottom: 18px;
-    }
     .login-field-label {
         font-size: 13px;
         font-weight: 600;
         color: #334155;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        margin-bottom: 4px;
     }
     .login-footer {
         text-align: center;
-        margin-top: 28px;
-        font-size: 12px;
+        margin-top: 24px;
+        font-size: 11px;
         color: #94a3b8;
     }
 
@@ -209,11 +194,19 @@ st.markdown("""
 
 # ========== Login Gate ==========
 if not st.session_state.logged_in:
-    st.markdown('<div class="login-wrapper">', unsafe_allow_html=True)
+    # Hide sidebar completely during login
+    st.markdown("""
+    <style>
+        [data-testid="stSidebar"] { display: none; }
+        [data-testid="collapsedControl"] { display: none; }
+        .stApp { background: linear-gradient(160deg, #0f172a 0%, #1e293b 35%, #0c4a6e 65%, #0f172a 100%) !important; }
+    </style>
+    """, unsafe_allow_html=True)
 
-    _, col_center, _ = st.columns([0.8, 1, 0.8])
+    # Center column: narrow card in the middle
+    _, col_card, _ = st.columns([1, 0.9, 1])
 
-    with col_center:
+    with col_card:
         st.markdown("""
         <div class="login-card">
             <div class="login-brand">
@@ -224,20 +217,18 @@ if not st.session_state.logged_in:
         """, unsafe_allow_html=True)
 
         st.markdown('<div class="login-field-label">👤 用户名</div>', unsafe_allow_html=True)
-        username = st.text_input("用户名", placeholder="请输入用户名", key="login_user",
-                                  label_visibility="collapsed")
+        username = st.text_input("用户名", placeholder="请输入用户名",
+                                  key="login_user", label_visibility="collapsed")
 
-        st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
+        st.markdown('<div style="height:6px"></div>', unsafe_allow_html=True)
         st.markdown('<div class="login-field-label">🔒 密码</div>', unsafe_allow_html=True)
-        password = st.text_input("密码", placeholder="请输入密码", type="password", key="login_pass",
-                                  label_visibility="collapsed")
+        password = st.text_input("密码", placeholder="请输入密码", type="password",
+                                  key="login_pass", label_visibility="collapsed")
 
-        st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
+        st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
 
         if st.button("登  录", type="primary", use_container_width=True):
             if username and password:
-                with st.spinner("验证身份..."):
-                    time.sleep(0.6)
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.rerun()
@@ -247,7 +238,6 @@ if not st.session_state.logged_in:
         st.markdown('<div class="login-footer">GEM-F1 Multi-Scenario Security Detection System</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
 # ========== Sidebar (logged in) ==========
